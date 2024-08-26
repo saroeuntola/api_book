@@ -7,7 +7,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class CategoryConroller extends Controller
+
 {
+    public function __construct(){
+        $this->middleware('permission:category-list|category-create|category-edit|category-delete', ['only' => ['index', 'store']]);
+        $this->middleware('permission:category-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:category-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:category-delete', ['only' => ['destroy']]);
+    }
     public function index(){
         $data = Category::with('getUser')->get();
         return response()->json([
@@ -82,5 +89,19 @@ class CategoryConroller extends Controller
              'massage' => $e->getMessage(),
          ], 500);
      }
+    }
+
+
+    public function destroy($id){
+        try {
+            $category = Category::find($id);
+            if (!$category) {
+                return response()->json(['error' => 'Category not found'], 404);
+            }
+            $category->delete();
+            return response()->json(['message' => 'Category deleted successfully'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }

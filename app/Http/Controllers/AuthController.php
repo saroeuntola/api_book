@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -9,16 +8,12 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
-
-
 class AuthController extends Controller
 {
     public function __construct()
     {
         $this->middleware('jwt.auth', ['except' => ['login', 'register']]);
     }
-
-
     public function login(Request $request)
     {
         try{

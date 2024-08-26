@@ -13,6 +13,13 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
+
+    public function __construct(){
+        $this->middleware('permission:user-list|user-create|user-edit|user-delete', ['only' => ['index','store','update','destroy']]);
+        $this->middleware('permission:user-create', ['only' => ['store']]);
+        $this->middleware('permission:user-edit', ['only' => ['update']]);
+        $this->middleware('permission:user-delete', ['only' => ['destroy']]);
+    }
     public function index()
     {
         $users = User::all();
@@ -168,5 +175,38 @@ public function updatePassword(Request $request, $id)
         return response()->json(['message' => $e->getMessage()], 400);
     }
 }
+
+
+    public function uploadProfileImage(Request $request, $id){
+        $validator = Validator::make($request->all(), [
+            'image' =>'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+
+            // Delete old image if it exists
+            if ($request->has('old_image') && $request->old_image) {
+                $oldImagePath = public_path('profiles_images') . '/' . $request->old_image;
+                if (file_exists($oldImagePath)) {
+                    unlink($oldImagePath);
+                }
+            }
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('profiles_images'), $imageName);
+            $bookData['image'] = $imageName;
+            $user->save(
+                [
+                    'image' => $bookData['image']?? null,
+                ]
+            );
+        }
+    }
 
 }

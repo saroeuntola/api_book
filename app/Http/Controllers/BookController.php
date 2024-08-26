@@ -9,31 +9,29 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 
-
-
-use function Laravel\Prompts\text;
-
 class BookController extends Controller
 {
-    // public function __construct(){
-    //     $this->middleware('permission:book-list|book-create|book-edit|book-delete', ['only' => ['index','store']]);
-    //     $this->middleware('permission:book-create', ['only' => ['create', 'store']]);
-    //     $this->middleware('permission:book-edit', ['only' => ['edit', 'update']]);
-    //     $this->middleware('permission:book-delete', ['only' => ['destroy']]);
-    // }
-    public function index(){
+    public function __construct(){
+        $this->middleware('permission:book-create|book-edit|book-delete', ['only' => ['store'], ['update'], ['destroy']],);
+        $this->middleware('permission:book-create', ['only' => ['create','store']]);
+        $this->middleware('permission:book-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:book-delete', ['only' => ['destroy']]);
+
+    }
+    public function index( Request $request){
         try{
-            $book = Book::with('getCategory','getUser')->get();
+            $query = Book::query();
+            if ($request->has('search')) {
+                $query->where('name', 'LIKE', '%'. $request->search. '%');
+            }
+            $book = $query->with('getCategory','getUser')->get();
             return response()->json(['message'=>'success', 'book'=>$book]);
         }
         catch(\Exception $ex){
 
             return response()->json(['message'=>'error', 'error'=> $ex->getMessage()]);
         }
-
-
     }
-
   public function store(Request $request)
 {
     try {
