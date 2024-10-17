@@ -44,13 +44,13 @@ Route::middleware('jwt.auth')->group(function () {
             Route::post('/upload_profile', [ProfileController::class, 'uploadProfileImage']);
 
         });
-         Route::prefix('roles')->group(function () {
-            Route::get('/list', [RolesController::class, 'index']);
-            Route::post('/create', [RolesController::class, 'store']);
-            Route::get('/show/{id}', [RolesController::class, 'show']);
-            Route::get('/edit/{id}', [RolesController::class, 'edit']);
-            Route::put('/update/{id}', [RolesController::class, 'update']);
-            Route::get('/get_persimssion', [RolesController::class, 'getPermission']);
-            Route::delete('/delete/{id}', [RolesController::class, 'destroy']);
-        });
+        //  Route::prefix('roles')->group(function () {
+        //     Route::get('/list', [RolesController::class, 'index']);
+        //     Route::post('/create', [RolesController::class, 'store']);
+        //     Route::get('/show/{id}', [RolesController::class, 'show']);
+        //     Route::get('/edit/{id}', [RolesController::class, 'edit']);
+        //     Route::put('/update/{id}', [RolesController::class, 'update']);
+        //     Route::get('/get_persimssion', [RolesController::class, 'getPermission']);
+        //     Route::delete('/delete/{id}', [RolesController::class, 'destroy']);
+        // });
 });
